@@ -1,5 +1,13 @@
+/*
+ * This project reads in .txt files and uses different sort methods to sort them from smallest to biggest into
+ * a new file. It also tells you how long it took to sort in milliseconds.
+ *
+ * Author: Ayan Masud
+ * Date: 11/24/23
+ * Teacher: Jason Galbraith
+ */
+
 import java.io.*;
-import java.util.Iterator;
 import java.util.Scanner;
 
 public class Sort {
@@ -9,7 +17,7 @@ public class Sort {
 	int[] inputArray;
 	long startTime;
 	
-	public Sort() {
+	public Sort() { // gets the input for what file wants to be sorted and what sorting method should be used
 		System.out.println("Enter a number for the input file.");
 		System.out.println("1: input1.txt  2: input2.txt  3: input3.txt  4: input4.txt");
 		input = consoleInput.nextLine();
@@ -35,17 +43,17 @@ public class Sort {
 			System.out.println(inputArray[i]);
 		}
 		System.out.println("Enter a number for the sort you want to use.");
-		System.out.println("1: Bubble  2: Selection  3: Table");
+		System.out.println("1: Bubble  2: Selection  3: Table  4: Quick");
 		input = consoleInput.nextLine();
 		if(input.length() != 1 && input.charAt(0) != '1' && input.charAt(0) != '2'
-				&& input.charAt(0) != '3') {
-			System.out.println("Enter 1, 2, or 3");
+				&& input.charAt(0) != '3' && input.charAt(0) != '4') {
+			System.out.println("Enter 1, 2, 3, or 4");
 			while (input.length() != 1 && input.charAt(0) != '1' && input.charAt(0) != '2'
-					&& input.charAt(0) != '3') {
+					&& input.charAt(0) != '3' && input.charAt(0) != '4') {
 				input = consoleInput.nextLine();
 			}
 		}
-		startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis(); // runs the sorting algorithm based off their input earlier
 		if(input.equals("1")){
 			inputArray = bubbleSort(inputArray);
 		}
@@ -55,13 +63,17 @@ public class Sort {
 		if(input.equals("3")){
 			inputArray = tableSort(inputArray);
 		}
-		long totalTime = System.currentTimeMillis() - startTime;
+		if (input.equals("4")){
+			inputArray = quickSort(inputArray, 0, inputArray.length - 1);
+		}
+		long totalTime = System.currentTimeMillis() - startTime; // calculates total time it took to sort
 		System.out.println("Total time: " + totalTime);
 		PrintWriter pw;
 		try {
-			pw = new PrintWriter(new FileWriter(new File("output.txt")));
+			pw = new PrintWriter(new FileWriter(new File("output.txt"))); // creates new file with the numbers sorted
 			String output = "";
 			for (int i = 0; i < inputArray.length; i++) {
+				System.out.println(inputArray[i]);
 				output += inputArray[i] + ",";
 			}
 			output += "\nTotal Time:" + totalTime;
@@ -123,6 +135,33 @@ public class Sort {
 			}
 		}
 
+		return array;
+	}
+
+	// compare each pair of numbers and move the larger to the right and less than or equal to the left
+	int[] quickSort(int[] array, int low, int high) {
+		if (low < high) {
+			int partition = array[high]; // decided to start the partition with the highest index
+			int i = low - 1;
+
+			for (int j = low; j < high; j++) {
+				if (array[j] < partition) { // swap the current number with the index + 1 if it is less than the partition
+					i++;
+					int temp = array[i];
+					array[i] = array[j];
+					array[j] = temp;
+				}
+			}
+
+			int temp = array[i + 1]; // place partition number in correct spot
+			array[i + 1] = array[high];
+			array[high] = temp;
+
+			int partitionIndex = i + 1;
+
+			quickSort(array, low, partitionIndex - 1); // sort numbers before partition index
+			quickSort(array, partitionIndex + 1, high); // sort numbers after partition index
+		}
 		return array;
 	}
 	
